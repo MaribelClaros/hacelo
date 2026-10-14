@@ -1,0 +1,17 @@
+name: Deploy to Fly.io
+
+# Manual on purpose (Actions > Deploy to Fly.io > Run workflow) so CI does not
+# fail before the FLY_API_TOKEN secret exists. Once it is set in
+# Settings > Secrets you can add a "push: branches: [main]" trigger here.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
