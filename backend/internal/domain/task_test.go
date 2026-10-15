@@ -114,6 +114,26 @@ func TestRescheduleRestartsCycle(t *testing.T) {
 	if task.NextReminderAt == nil || !task.NextReminderAt.Equal(at) {
 		t.Errorf("next reminder = %v, want %v", task.NextReminderAt, at)
 	}
+	if !task.OriginalTime.Equal(at) {
+		t.Errorf("original time = %v, want %v", task.OriginalTime, at)
+	}
+}
+
+func TestOverdueAfterRescheduleUsesNewTime(t *testing.T) {
+	task := newTestTask(t)
+	rescheduled := baseTime.AddDate(0, 0, 3)
+	task.Reschedule(rescheduled, baseTime)
+
+	for i := 0; i <= MaxVerificationRounds; i++ {
+		if err := task.Snooze(rescheduled); err != nil {
+			t.Fatalf("Snooze %d: %v", i, err)
+		}
+	}
+
+	want := rescheduled.AddDate(0, 0, 1)
+	if task.Status != StatusOverdue || task.NextReminderAt == nil || !task.NextReminderAt.Equal(want) {
+		t.Errorf("status=%q next=%v, want overdue/%v", task.Status, task.NextReminderAt, want)
+	}
 }
 
 func TestIsDueAndMarkReminderSent(t *testing.T) {

@@ -124,10 +124,13 @@ func (t *Task) UpdateDetails(description *string, urgency *Urgency, snoozeMinute
 	return nil
 }
 
-// Reschedule manually sets the next reminder and restarts the cycle.
+// Reschedule manually sets the next reminder and restarts the cycle. The new
+// time also becomes the task's reference time, so "same time tomorrow" after
+// an overdue is computed from it and not from the stale original time.
 func (t *Task) Reschedule(at time.Time, now time.Time) {
 	t.Status = StatusPending
 	t.VerificationRound = 0
+	t.OriginalTime = at
 	t.NextReminderAt = &at
 	t.LastSentAt = nil
 	t.UpdatedAt = now
