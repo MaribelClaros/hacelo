@@ -5,6 +5,9 @@ backend/*.db-journal
 backend/internal/adapters/inbound/httpapi/static/*
 !backend/internal/adapters/inbound/httpapi/static/.gitkeep
 
+# Release binaries
+/dist/
+
 # Compiled frontend: only exists in Docker/CI builds, never in git.
 web/dist/
 web/node_modules/
